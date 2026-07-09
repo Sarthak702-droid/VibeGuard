@@ -1,236 +1,171 @@
+<p align="center">
+  <img src="assets/logo.png" alt="VibeGuard Logo" width="500px">
+</p>
+
 # VibeGuard
 
-Guardrails for vibe-coded software.
+> **Guardrails for vibe-coded software.**
 
-VibeGuard is an open-source Python CLI that helps AI-assisted developers generate clean project context, better prompts, token-aware file packs, verification reports, Git diff explanations, risk reports, and next prompts.
+VibeGuard is an open-source Python CLI that empowers AI-assisted developers to create cleaner project context, generate targeted prompts, bundle token-aware files, compile verification reports, audit Git diffs, detect risk patterns, and draft follow-up hardening instructions.
 
-It is not an AI coding agent and it does not require an LLM API key. It sits before and after tools like Codex, Cursor, Claude, ChatGPT, Windsurf, Replit, and similar coding assistants.
+It is **not** an autonomous AI coding agent and **requires no LLM API keys**. VibeGuard operates locally, serving as a protective layer before you feed context to coding assistants (like Cursor, Claude, ChatGPT, Windsurf, Replit, or Codex) and after they modify your repository.
 
-## Positioning
+---
 
-Before AI codes, give it the right context.
+## 🎯 Positioning
 
-After AI codes, verify what changed.
+* **Before AI codes:** Supply context packs and optimized prompt templates to maximize coding accuracy.
+* **After AI codes:** Instantly verify changes, review Git diff summaries, and catch potential security or logical regressions.
+* **Core benefits:** Save context tokens, catch risky AI-generated changes, and ship code with confidence.
 
-Save tokens. Catch risky AI changes. Ship safer.
+---
 
-## Install
+## 🚀 Installation
 
-### Global Install with pipx (Recommended)
-
+### Global Isolated Installation (Recommended)
+Install and run VibeGuard globally across all terminal sessions using `pipx`:
 ```bash
 pipx install vibeguard
 ```
 
 ### Install for Development
-
+Clone the repository and set up an editable installation inside a Python virtual environment:
 ```bash
-git clone <repo-url>
-cd Vibegaurd
+git clone https://github.com/Sarthak702-droid/VibeGaurd.git
+cd VibeGaurd
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
 
-# CLI Usage
+---
 
-After installation, VibeGuard can be run globally:
+## 💻 CLI Global Usage & Shortcuts
 
+After installation, VibeGuard is accessible globally using either the full command or its short developer alias:
 ```bash
-vibeguard
+vibeguard [COMMAND] [OPTIONS]
+# or
+vg [COMMAND] [OPTIONS]
 ```
 
-or with the short alias:
+### Global Options
+* `--version` / `-V`: Show the version and exit.
+* `--help`: Show command documentation.
 
-```bash
-vg
-```
+---
 
-## Quick Start
+## 🔧 Command Reference
 
-```bash
-cd my-project
-vibeguard init
-vibeguard all --goal "add OTP login without changing existing architecture"
-```
+| Command | Alias | Description | Key Options |
+| :--- | :--- | :--- | :--- |
+| `init` | `vg init` | Initializes a `.vibeguard/` folder with a template config file. | `-p, --project <path>` |
+| `doctor` | `vg doctor` | Diagnoses project health, CLI path issues, and tool chains. | `-p, --project <path>` |
+| `scan` | `vg scan` | Detects technology stacks, frameworks, and important files. | `-p, --project <path>` |
+| `context` | `vg context` | Creates an AI-readable context report based on project files. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
+| `plan` | `vg plan` | Turns a rough concept into a structured implementation plan. | `-g, --goal <str>`, `-p <path>` |
+| `prompt` | `vg prompt` | Generates a high-quality prompt tailored for your coding tool. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
+| `pack` | `vg pack` | Packages relevant files into a single context file. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
+| `verify` | `vg verify` | Performs automatic checks (lints, test suites, types). | `-p, --project <path>` |
+| `diff-explain`| `vg diff-explain` | Summarizes uncommitted code changes in plain English. | `-p, --project <path>` |
+| `risks` | `vg risks` | Audits changed files for security issues and logic flags. | `-p, --project <path>` |
+| `next-prompt` | `vg next-prompt` | Generates the next best prompt to address risks/failures. | `-p, --project <path>` |
+| `all` | `vg all` | Runs the full VibeGuard end-to-end workflow at once. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
 
-Short alias:
+> **Note:** Every command supports a `--no-banner` flag to suppress the terminal startup branding, making automated scripts cleaner.
 
-```bash
-cd my-project
-vg init
-vg all -g "add OTP login without changing existing architecture"
-```
+---
 
-## Commands
+## ⚙️ Core Workflows
 
-```bash
-vibeguard scan
-vibeguard context -g "add OTP login"
-vibeguard plan -g "add OTP login"
-vibeguard prompt -g "add OTP login"
-vibeguard pack -g "add OTP login" -t 8000
-vibeguard verify
-vibeguard diff-explain
-vibeguard risks
-vibeguard next-prompt
-vibeguard doctor
-vibeguard all -g "add OTP login"
-```
+### 1. Before Asking AI to Code (Preparing Context)
+1. **Initialize** the workspace:
+   ```bash
+   vg init
+   ```
+2. **Scan** the stack and frameworks:
+   ```bash
+   vg scan
+   ```
+3. Generate **context, plan, and pack files**:
+   ```bash
+   vg context -g "add OTP login"
+   vg plan -g "add OTP login without changing database schemas"
+   vg pack -g "add OTP login" -t 8000
+   ```
+4. Copy the generated files from `.vibeguard/` directly into your AI chat session to guide the coding tool.
 
-## Security Defaults
+### 2. After AI Modifies Code (Verifying & Hardening)
+1. **Verify** that code compiles and tests pass:
+   ```bash
+   vg verify
+   ```
+2. **Review risks** (detects API keys, security breaches, or altered authentication methods):
+   ```bash
+   vg risks
+   ```
+3. Get an **explanation of changes**:
+   ```bash
+   vg diff-explain
+   ```
+4. Generate the **hardening prompt** to fix any identified failures:
+   ```bash
+   vg next-prompt
+   ```
 
-VibeGuard:
+---
 
-* Does not use shell=True
-* Does not print secrets
-* Skips .env files
-* Skips private keys
-* Skips binary files
-* Does not auto-modify source code
-* Does not run destructive commands
+## 📁 Workspace Layout
 
-## Quick Demo
-
-Run VibeGuard on the included messy Expo project:
-
-```bash
-vibeguard scan --project examples/messy-expo
-vibeguard doctor --project examples/messy-expo
-vibeguard all --project examples/messy-expo --goal "add OTP login without changing existing architecture"
-```
-
-Sample scan output:
-
-```text
-Project type: React Native / Expo
-Package manager: npm
-Frameworks: React, React Native, Expo, TypeScript
-```
-
-Sample pack output:
-
-```text
-Pack written: examples/messy-expo/.vibeguard/pack.md
-Estimated tokens: 387 / 8000
-```
-
-Sample risk output after a risky auth change:
-
-```text
-Risk Level: High
-WARNING Secret-like string found
-Reason: changed code contains possible hardcoded secret/API key/token
-WARNING Auth logic changed
-File: src/services/auth.ts
-Reason: auth-related files require manual review
-WARNING No test file changed
-Reason: feature code changed without test update
-```
-
-## Core Workflow
-
-Before asking an AI tool to code:
-
-```bash
-vibeguard scan
-vibeguard context --goal "add OTP login"
-vibeguard plan "add OTP login without changing existing architecture"
-vibeguard prompt "add OTP login without changing existing architecture"
-vibeguard pack --goal "add OTP login" --max-tokens 8000
-```
-
-After AI changes code:
-
-```bash
-vibeguard verify
-vibeguard diff-explain
-vibeguard risks
-vibeguard next-prompt
-```
-
-For demos and repeated local use, run the complete MVP flow:
-
-```bash
-vibeguard all --goal "add OTP login without changing existing architecture"
-```
-
-Generated files live in `.vibeguard/`:
-
+All VibeGuard state and outputs are localized within a `.vibeguard/` folder:
 ```text
 .vibeguard/
-├── context.md
-├── prompt.md
-├── task.md
-├── pack.md
-├── cache/
-└── reports/
+├── config.yaml          # Project-specific paths, verification steps, and rules
+├── context.md           # Bundled context for AI
+├── prompt.md            # Target prompt template
+├── task.md              # Detailed implementation plan
+├── pack.md              # Token-packed code segments
+├── cache/               # Scan results cache
+└── reports/             # Post-coding audit reports
     ├── diff_report.md
-    ├── next_prompt.md
     ├── risk_report.md
+    ├── next_prompt.md
     └── verification_report.md
 ```
 
-For real user projects, keep generated cache and reports out of Git:
-
+### Recommended Git Configuration
+Add VibeGuard's generated reports and caches to your `.gitignore` to keep commits clean:
 ```gitignore
 .vibeguard/cache/
 .vibeguard/reports/
 ```
 
-## Commands
+---
 
-- `vibeguard init` creates `.vibeguard/`.
-- `vibeguard scan` detects stack, frameworks, important files, and ignored folders.
-- `vibeguard doctor` checks whether the project is ready for VibeGuard.
-- `vibeguard context --goal "..."` writes `.vibeguard/context.md`.
-- `vibeguard plan "..."` writes `.vibeguard/task.md`.
-- `vibeguard prompt "..."` writes `.vibeguard/prompt.md`.
-- `vibeguard pack --goal "..." --max-tokens 8000` selects relevant files.
-- `vibeguard verify` runs available Python/Node checks and skips unavailable tools.
-- `vibeguard diff-explain` summarizes the current Git diff.
-- `vibeguard risks` detects risky patterns in changed files.
-- `vibeguard next-prompt` generates a follow-up prompt for hardening changes.
-- `vibeguard all --goal "..."` runs the complete MVP workflow.
+## 🛡️ Security Defaults
+VibeGuard is designed to be safe-by-default for enterprise workspaces:
+* 🔒 **Zero Code Modifications:** Never modifies your source code files directly.
+* 🛡️ **No Shell Execution:** Avoids running untrusted code via standard OS shell shells.
+* 🔐 **Automated Secret Redaction:** Automatically skips sensitive files like `.env`, private keys (`.pem`), and database configuration variables.
+* 🚫 **Safe Scans:** Automatically ignores binary assets, node modules, build targets, and large generated directories.
 
-## Demo Video Script
+---
 
-1. Show `examples/messy-expo`.
-2. Run `vibeguard scan --project examples/messy-expo`.
-3. Run `vibeguard all --project examples/messy-expo --goal "add OTP login without changing existing architecture"`.
-4. Open `.vibeguard/prompt.md`.
-5. Make a small risky change in `src/services/auth.ts`.
-6. Run `vibeguard risks --project examples/messy-expo`.
-7. Show auth risk, secret-like string detection, and missing test warning.
-8. End with: "Save tokens. Catch risky AI changes. Ship safer."
+## 🗺️ Project Roadmap
 
-## Roadmap
+### v0.1.0 (Current)
+* Multi-command CLI and `vg` shortcut setup.
+* Project scanner, prompt generator, and risk auditing framework.
+* Diagnostics checklist (`vg doctor`).
 
-v0.1.0:
+### v0.2.0 (Upcoming)
+* Custom configuration rules engine for custom team guardrails.
+* Refined secret leak detection.
+* Integration options for CI workflows (GitHub Actions).
+* Structured JSON outputs for automation.
 
-- scan
-- context
-- plan
-- prompt
-- pack
-- verify
-- diff-explain
-- risks
-- next-prompt
-- doctor
-- all
+### v0.3.0 (Planned)
+* Pull Request audit reporting.
+* Framework dependency graphs.
+* Dynamic HTML reporting dashboard.
 
-v0.2.0:
-
-- JSON output mode
-- better secret detection
-- better test detection
-- GitHub Actions support
-- custom config rules
-
-v0.3.0:
-
-- PR review mode
-- HTML report
-- framework-specific packs
-- better dependency graph
