@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vibegaurd-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "Guardrails for vibe-coded software."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -42,7 +42,8 @@ dependencies = [
   "pydantic>=2",
   "jinja2>=3.1",
   "pyyaml>=6",
-  "pathspec>=0.12"
+  "pathspec>=0.12",
+  "openai>=1.0,<3"
 ]
 
 [project.optional-dependencies]
@@ -68,37 +69,7 @@ packages = ["vibeguard"]
 [tool.hatch.build.targets.sdist]
 include = [
   "vibeguard",
-  "README.md",
-  "LICENSE",
-  "pyproject.toml"
-]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-
-[project.optional-dependencies]
-dev = [
-  "pytest>=8",
-  "ruff>=0.5",
-  "build>=1.2",
-  "twine>=5"
-]
-
-[project.urls]
-Homepage = "https://github.com/Sarthak702-droid/VibeGaurd"
-Repository = "https://github.com/Sarthak702-droid/VibeGaurd"
-Issues = "https://github.com/Sarthak702-droid/VibeGaurd/issues"
-
-[project.scripts]
-vibeguard = "vibeguard.cli:app"
-vbg = "vibeguard.cli:app"
-
-[tool.hatch.build.targets.wheel]
-packages = ["vibeguard"]
-
-[tool.hatch.build.targets.sdist]
-include = [
-  "vibeguard",
+  "tests",
   "README.md",
   "LICENSE",
   "pyproject.toml"

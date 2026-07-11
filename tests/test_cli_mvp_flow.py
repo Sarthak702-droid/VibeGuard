@@ -98,6 +98,30 @@ def test_pack_command_writes_token_saving_pack(tmp_path: Path) -> None:
     assert "- phone" in content
 
 
+def test_prompt_command_can_use_opt_in_llm(tmp_path: Path, monkeypatch) -> None:
+    project = _make_expo_project(tmp_path)
+    captured = {}
+
+    def fake_enhance(prompt: str, *, model: str, max_tokens: int) -> str:
+        captured["prompt"] = prompt
+        captured["model"] = model
+        captured["max_tokens"] = max_tokens
+        return "# LLM-refined prompt\n"
+
+    monkeypatch.setattr("vibeguard.cli.enhance_coding_prompt", fake_enhance)
+
+    result = runner.invoke(
+        app,
+        ["prompt", "-p", str(project), "-g", "add OTP login", "--llm", "--llm-max-tokens", "512"],
+    )
+
+    assert result.exit_code == 0
+    assert "Refining prompt with NVIDIA model: z-ai/glm-5.2" in result.output
+    assert captured["max_tokens"] == 512
+    assert "Do not expose secrets." in captured["prompt"]
+    assert (project / ".vibeguard" / "prompt.md").read_text(encoding="utf-8") == "# LLM-refined prompt\n"
+
+
 def test_verify_command_skips_missing_node_scripts_and_writes_report(tmp_path: Path) -> None:
     project = _make_expo_project(tmp_path)
 
