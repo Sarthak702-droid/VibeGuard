@@ -28,6 +28,13 @@ from vibeguard.core.risk_engine import Risk, analyze_risks
 from vibeguard.core.scanner import scan_project
 from vibeguard.core.token_packer import pack_files
 from vibeguard.core.verifier import verify_project
+from vibeguard.llm import (
+    DEFAULT_MAX_TOKENS,
+    DEFAULT_NVIDIA_MODEL,
+    LLMConfigurationError,
+    LLMRequestError,
+    enhance_coding_prompt,
+)
 from vibeguard.utils.os_utils import get_os_name
 
 
@@ -169,6 +176,18 @@ def prompt(
     goal: str = typer.Option(None, "--goal", "-g", help="Goal for the AI coding task."),
     project: Path = typer.Option(Path("."), "--project", "-p", help="Project directory."),
     max_tokens: int = typer.Option(8000, "--max-tokens", "-t", help="Prompt file budget."),
+    use_llm: bool = typer.Option(
+        False,
+        "--llm",
+        help="Refine the generated prompt with NVIDIA GLM-5.2 (requires NVIDIA_API_KEY).",
+    ),
+    model: str = typer.Option(DEFAULT_NVIDIA_MODEL, "--model", help="NVIDIA NIM model name."),
+    llm_max_tokens: int = typer.Option(
+        DEFAULT_MAX_TOKENS,
+        "--llm-max-tokens",
+        min=1,
+        help="Maximum tokens requested from the optional LLM.",
+    ),
     no_banner: bool = typer.Option(False, "--no-banner", help="Disable the startup banner."),
 ) -> None:
     """Generate a high-quality prompt for AI coding tools."""
@@ -182,7 +201,19 @@ def prompt(
         raise typer.Exit(1)
     scan_result = scan_project(project)
     pack_result = pack_files(project, scan_result, resolved_goal, max_tokens)
-    path = write_text(project, "prompt.md", build_prompt(scan_result, resolved_goal, pack_result))
+    prompt_content = build_prompt(scan_result, resolved_goal, pack_result)
+    if use_llm:
+        console.print(f"Refining prompt with NVIDIA model: {model}")
+        try:
+            prompt_content = enhance_coding_prompt(
+                prompt_content,
+                model=model,
+                max_tokens=llm_max_tokens,
+            )
+        except (LLMConfigurationError, LLMRequestError) as exc:
+            console.print(f"ERROR: {exc}")
+            raise typer.Exit(1) from exc
+    path = write_text(project, "prompt.md", prompt_content)
     console.print(f"Prompt written: {display_path(path)}")
 
 
@@ -264,7 +295,8 @@ def doctor(
     project_path = root
 
     vibeguard_avail = "available" if shutil.which("vibeguard") else "missing"
-    vg_avail = "available" if shutil.which("vg") else "missing"
+    vbg_avail = "available" if shutil.which("vbg") else "missing"
+    vg_path = shutil.which("vg")
     try:
         import vibeguard
         module_path = Path(vibeguard.__file__).resolve()
@@ -281,6 +313,7 @@ def doctor(
     python_exec = sys.executable
     pytest_avail = "available" if shutil.which("pytest") else "missing"
     ruff_avail = "available" if shutil.which("ruff") else "missing"
+    nvidia_llm = "configured" if os.getenv("NVIDIA_API_KEY") else "missing (optional)"
 
     git_repo = "detected" if _has_git_repository(root) else "missing"
     pkg_json = "detected" if (root / "package.json").exists() else "missing"
@@ -298,7 +331,7 @@ def doctor(
     console.print("")
     console.print("CLI:")
     console.print(f"- vibeguard command: {vibeguard_avail}")
-    console.print(f"- vg command: {vg_avail}")
+    console.print(f"- vbg command: {vbg_avail}")
     console.print(f"- Python executable: {display_path(Path(python_exec))}")
     console.print(f"- Package install mode: {install_mode}")
     console.print("")
@@ -309,6 +342,7 @@ def doctor(
     console.print(f"- Python executable: {display_path(Path(python_exec))}")
     console.print(f"- pytest: {pytest_avail}")
     console.print(f"- ruff: {ruff_avail}")
+    console.print(f"- NVIDIA LLM: {nvidia_llm}")
     console.print("")
     console.print("Project:")
     console.print(f"- Git repository: {git_repo}")
@@ -343,11 +377,14 @@ def doctor(
         console.print("Suggestion: run `pip install -e .` or use `pipx install -e .` in your workspace.")
         warnings += 1
 
-    if vg_avail == "available":
-        console.print("OK vg command available")
+    if vbg_avail == "available":
+        console.print("OK vbg command available")
     else:
-        console.print("WARNING vg command not found in PATH")
+        console.print("WARNING vbg command not found in PATH")
         warnings += 1
+
+    if get_os_name() == "linux" and vg_path:
+        console.print("WARNING: Linux already provides a system command named 'vg'. Use 'vbg' instead.")
 
     if git_avail == "available":
         console.print("OK Git available")

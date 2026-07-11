@@ -63,7 +63,7 @@ def print_banner(console: Console | None = None, compact: bool = False, project:
             brand,
             border_style="cyan",
             padding=(1, 4),
-            title="[bold cyan]VG[/bold cyan]",
+            title="[bold cyan]VBG[/bold cyan]",
         )
     )
     console.print()

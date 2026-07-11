@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="VibeGuard Logo" width="500px">
+  <img src="https://raw.githubusercontent.com/Sarthak702-droid/VibeGaurd/main/assets/logo.png" alt="VibeGuard Logo" width="500px">
 </p>
 
 # VibeGuard
@@ -8,7 +8,9 @@
 
 VibeGuard is an open-source Python CLI that empowers AI-assisted developers to create cleaner project context, generate targeted prompts, bundle token-aware files, compile verification reports, audit Git diffs, detect risk patterns, and draft follow-up hardening instructions.
 
-It is **not** an autonomous AI coding agent and **requires no LLM API keys**. VibeGuard operates locally, serving as a protective layer before you feed context to coding assistants (like Cursor, Claude, ChatGPT, Windsurf, Replit, or Codex) and after they modify your repository.
+It is **not** an autonomous AI coding agent. Its core workflow requires no API key and
+operates locally. Prompt refinement through NVIDIA GLM-5.2 is optional and runs only when
+you pass `--llm`.
 
 ---
 
@@ -23,31 +25,54 @@ It is **not** an autonomous AI coding agent and **requires no LLM API keys**. Vi
 ## 🚀 Installation
 
 ### Global Isolated Installation (Recommended)
+
 Install and run VibeGuard globally across all terminal sessions using `pipx`:
+
 ```bash
-pipx install vibeguard
+pipx install vibegaurd-cli
+```
+
+To install the latest repository revision instead:
+
+```bash
+pipx install git+https://github.com/Sarthak702-droid/VibeGaurd.git
+```
+
+### pip
+
+```bash
+pip install vibegaurd-cli
 ```
 
 ### Install for Development
+
 Clone the repository and set up an editable installation inside a Python virtual environment:
+
 ```bash
 git clone https://github.com/Sarthak702-droid/VibeGaurd.git
 cd VibeGaurd
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
+pip install -e ".[dev]"
 ```
+
+On Windows PowerShell, activate the environment with `.venv\Scripts\Activate.ps1`.
+For a runtime-only editable install, use `python -m pip install -e .`.
 
 ---
 
 ## 💻 CLI Global Usage & Shortcuts
 
 After installation, VibeGuard is accessible globally using either the full command or its short developer alias:
+
 ```bash
 vibeguard [COMMAND] [OPTIONS]
 # or
-vg [COMMAND] [OPTIONS]
+vbg [COMMAND] [OPTIONS]
 ```
+
+VibeGuard intentionally does not install a `vg` command because Linux distributions may
+already provide that system command. Use `vbg` for the short alias.
 
 ### Global Options
 * `--version` / `-V`: Show the version and exit.
@@ -59,20 +84,49 @@ vg [COMMAND] [OPTIONS]
 
 | Command | Alias | Description | Key Options |
 | :--- | :--- | :--- | :--- |
-| `init` | `vg init` | Initializes a `.vibeguard/` folder with a template config file. | `-p, --project <path>` |
-| `doctor` | `vg doctor` | Diagnoses project health, CLI path issues, and tool chains. | `-p, --project <path>` |
-| `scan` | `vg scan` | Detects technology stacks, frameworks, and important files. | `-p, --project <path>` |
-| `context` | `vg context` | Creates an AI-readable context report based on project files. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
-| `plan` | `vg plan` | Turns a rough concept into a structured implementation plan. | `-g, --goal <str>`, `-p <path>` |
-| `prompt` | `vg prompt` | Generates a high-quality prompt tailored for your coding tool. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
-| `pack` | `vg pack` | Packages relevant files into a single context file. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
-| `verify` | `vg verify` | Performs automatic checks (lints, test suites, types). | `-p, --project <path>` |
-| `diff-explain`| `vg diff-explain` | Summarizes uncommitted code changes in plain English. | `-p, --project <path>` |
-| `risks` | `vg risks` | Audits changed files for security issues and logic flags. | `-p, --project <path>` |
-| `next-prompt` | `vg next-prompt` | Generates the next best prompt to address risks/failures. | `-p, --project <path>` |
-| `all` | `vg all` | Runs the full VibeGuard end-to-end workflow at once. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
+| `init` | `vbg init` | Initializes a `.vibeguard/` folder with a template config file. | `-p, --project <path>` |
+| `doctor` | `vbg doctor` | Diagnoses project health, CLI path issues, and tool chains. | `-p, --project <path>` |
+| `scan` | `vbg scan` | Detects technology stacks, frameworks, and important files. | `-p, --project <path>` |
+| `context` | `vbg context` | Creates an AI-readable context report based on project files. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
+| `plan` | `vbg plan` | Turns a rough concept into a structured implementation plan. | `-g, --goal <str>`, `-p <path>` |
+| `prompt` | `vbg prompt` | Generates a prompt locally; optionally refines it with NVIDIA GLM-5.2. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>`, `--llm` |
+| `pack` | `vbg pack` | Packages relevant files into a single context file. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
+| `verify` | `vbg verify` | Performs automatic checks (lints, test suites, types). | `-p, --project <path>` |
+| `diff-explain`| `vbg diff-explain` | Summarizes uncommitted code changes in plain English. | `-p, --project <path>` |
+| `risks` | `vbg risks` | Audits changed files for security issues and logic flags. | `-p, --project <path>` |
+| `next-prompt` | `vbg next-prompt` | Generates the next best prompt to address risks/failures. | `-p, --project <path>` |
+| `all` | `vbg all` | Runs the full VibeGuard end-to-end workflow at once. | `-g, --goal <str>`, `-p <path>`, `-t <tokens>` |
 
 > **Note:** Every command supports a `--no-banner` flag to suppress the terminal startup branding, making automated scripts cleaner.
+
+### Optional NVIDIA GLM-5.2 refinement
+
+Create an NVIDIA API key, store it in the `NVIDIA_API_KEY` environment variable, and
+request LLM refinement explicitly:
+
+```bash
+# Linux/macOS
+export NVIDIA_API_KEY="your-new-rotated-key"
+vbg prompt -g "add OTP login" --llm
+```
+
+```powershell
+# Windows PowerShell (current terminal session)
+$env:NVIDIA_API_KEY = "your-new-rotated-key"
+vbg prompt -g "add OTP login" --llm
+```
+
+The default model is `z-ai/glm-5.2`. Override it only when using another model exposed by
+the same NVIDIA NIM endpoint:
+
+```bash
+vbg prompt -g "add OTP login" --llm --model z-ai/glm-5.2 --llm-max-tokens 4096
+```
+
+Without `--llm`, prompt generation remains fully local. With `--llm`, VibeGuard sends the
+generated prompt—which contains project metadata and selected file paths, but not the
+selected files' contents—to NVIDIA. Never place API keys in source code, command flags,
+`.vibeguard/` outputs, or committed `.env` files.
 
 ---
 
@@ -81,36 +135,36 @@ vg [COMMAND] [OPTIONS]
 ### 1. Before Asking AI to Code (Preparing Context)
 1. **Initialize** the workspace:
    ```bash
-   vg init
+   vbg init
    ```
 2. **Scan** the stack and frameworks:
    ```bash
-   vg scan
+   vbg scan
    ```
 3. Generate **context, plan, and pack files**:
    ```bash
-   vg context -g "add OTP login"
-   vg plan -g "add OTP login without changing database schemas"
-   vg pack -g "add OTP login" -t 8000
+   vbg context -g "add OTP login"
+   vbg plan -g "add OTP login without changing database schemas"
+   vbg pack -g "add OTP login" -t 8000
    ```
 4. Copy the generated files from `.vibeguard/` directly into your AI chat session to guide the coding tool.
 
 ### 2. After AI Modifies Code (Verifying & Hardening)
 1. **Verify** that code compiles and tests pass:
    ```bash
-   vg verify
+   vbg verify
    ```
 2. **Review risks** (detects API keys, security breaches, or altered authentication methods):
    ```bash
-   vg risks
+   vbg risks
    ```
 3. Get an **explanation of changes**:
    ```bash
-   vg diff-explain
+   vbg diff-explain
    ```
 4. Generate the **hardening prompt** to fix any identified failures:
    ```bash
-   vg next-prompt
+   vbg next-prompt
    ```
 
 ---
@@ -153,10 +207,10 @@ VibeGuard is designed to be safe-by-default for enterprise workspaces:
 
 ## 🗺️ Project Roadmap
 
-### v0.1.0 (Current)
-* Multi-command CLI and `vg` shortcut setup.
+### v0.1.1 (Current)
+* Multi-command CLI and `vbg` shortcut setup.
 * Project scanner, prompt generator, and risk auditing framework.
-* Diagnostics checklist (`vg doctor`).
+* Diagnostics checklist (`vbg doctor`).
 
 ### v0.2.0 (Upcoming)
 * Custom configuration rules engine for custom team guardrails.
@@ -168,4 +222,60 @@ VibeGuard is designed to be safe-by-default for enterprise workspaces:
 * Pull Request audit reporting.
 * Framework dependency graphs.
 * Dynamic HTML reporting dashboard.
+
+---
+
+## 📦 Package Validation
+
+Run the release checks from an activated development environment:
+
+```bash
+python -m pytest
+python -m build
+python -m twine check dist/*
+```
+
+To test the built wheel without changing the development environment:
+
+```bash
+python -m venv /tmp/vibeguard-wheel-test
+/tmp/vibeguard-wheel-test/bin/python -m pip install dist/*.whl
+/tmp/vibeguard-wheel-test/bin/vibeguard --help
+/tmp/vibeguard-wheel-test/bin/vbg --help
+```
+
+On Windows, use the equivalent executables under
+`%TEMP%\vibeguard-wheel-test\Scripts\`.
+
+## 🚢 Publishing a Release
+
+Releases are published by `.github/workflows/publish.yml` when a semantic version tag is
+pushed. The workflow checks that the tag matches the package version, builds the wheel and
+source distribution, validates both with Twine, and publishes with a PyPI API token stored
+as a GitHub environment secret.
+
+### Configure the PyPI token
+
+1. Sign in to PyPI and open **Account settings → API tokens → Add API token**.
+2. Because `vibegaurd-cli` has not been published yet, create an account-scoped token for
+   the first upload. Copy it once; PyPI will not show it again.
+3. In GitHub, open **Settings → Environments → pypi → Environment secrets**.
+4. Create a secret named `PYPI_API_TOKEN` and paste the complete token, including its
+   `pypi-` prefix.
+5. After the first successful upload, delete the account-scoped token, create a token scoped
+   only to `vibegaurd-cli`, and replace the GitHub secret with the new token.
+
+The workflow references `${{ secrets.PYPI_API_TOKEN }}`; the token itself must never be
+written into `publish.yml` or committed to Git.
+
+After updating and committing the version, publish `0.1.1` with:
+
+```bash
+git push origin main
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+PyPI does not allow an existing distribution file or version to be overwritten. Never
+reuse `v0.1.0`; increment the version and create a new tag for every release.
 
