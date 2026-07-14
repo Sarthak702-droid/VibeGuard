@@ -18,20 +18,20 @@ path = "src/bin/vbg.rs"
 clap.workspace = true
 serde_json.workspace = true
 toml.workspace = true
-vibeguard-ai = { path = "../vibeguard-ai" }
-vibeguard-auth = { path = "../vibeguard-auth" }
-vibeguard-cache = { path = "../vibeguard-cache" }
-vibeguard-config = { path = "../vibeguard-config" }
-vibeguard-context = { path = "../vibeguard-context" }
-vibeguard-core = { path = "../vibeguard-core" }
-vibeguard-deps = { path = "../vibeguard-deps" }
-vibeguard-git = { path = "../vibeguard-git" }
-vibeguard-planner = { path = "../vibeguard-planner" }
-vibeguard-prompt = { path = "../vibeguard-prompt" }
-vibeguard-report = { path = "../vibeguard-report" }
-vibeguard-repository = { path = "../vibeguard-repository" }
-vibeguard-risk = { path = "../vibeguard-risk" }
-vibeguard-runner = { path = "../vibeguard-runner" }
-vibeguard-scanner = { path = "../vibeguard-scanner" }
-vibeguard-secrets = { path = "../vibeguard-secrets" }
-vibeguard-verifier = { path = "../vibeguard-verifier" }
+vibeguard-ai = { path = "../vibeguard-ai", version = "0.3.0" }
+vibeguard-auth = { path = "../vibeguard-auth", version = "0.3.0" }
+vibeguard-cache = { path = "../vibeguard-cache", version = "0.3.0" }
+vibeguard-config = { path = "../vibeguard-config", version = "0.3.0" }
+vibeguard-context = { path = "../vibeguard-context", version = "0.3.0" }
+vibeguard-core = { path = "../vibeguard-core", version = "0.3.0" }
+vibeguard-deps = { path = "../vibeguard-deps", version = "0.3.0" }
+vibeguard-git = { path = "../vibeguard-git", version = "0.3.0" }
+vibeguard-planner = { path = "../vibeguard-planner", version = "0.3.0" }
+vibeguard-prompt = { path = "../vibeguard-prompt", version = "0.3.0" }
+vibeguard-report = { path = "../vibeguard-report", version = "0.3.0" }
+vibeguard-repository = { path = "../vibeguard-repository", version = "0.3.0" }
+vibeguard-risk = { path = "../vibeguard-risk", version = "0.3.0" }
+vibeguard-runner = { path = "../vibeguard-runner", version = "0.3.0" }
+vibeguard-scanner = { path = "../vibeguard-scanner", version = "0.3.0" }
+vibeguard-secrets = { path = "../vibeguard-secrets", version = "0.3.0" }
+vibeguard-verifier = { path = "../vibeguard-verifier", version = "0.3.0" }
