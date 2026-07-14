@@ -7,4 +7,4 @@ license.workspace = true
 
 [dependencies]
 regex.workspace = true
-vibeguard-core = { path = "../vibeguard-core" }
+vibeguard-core = { path = "../vibeguard-core", version = "0.3.0" }

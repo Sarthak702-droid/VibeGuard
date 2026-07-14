@@ -7,5 +7,5 @@ license.workspace = true
 
 [dependencies]
 thiserror.workspace = true
-vibeguard-core = { path = "../vibeguard-core" }
-vibeguard-repository = { path = "../vibeguard-repository" }
+vibeguard-core = { path = "../vibeguard-core", version = "0.3.0" }
+vibeguard-repository = { path = "../vibeguard-repository", version = "0.3.0" }

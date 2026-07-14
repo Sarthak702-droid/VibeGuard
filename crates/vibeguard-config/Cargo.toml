@@ -10,4 +10,4 @@ directories.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 toml.workspace = true
-vibeguard-core = { path = "../vibeguard-core" }
+vibeguard-core = { path = "../vibeguard-core", version = "0.3.0" }

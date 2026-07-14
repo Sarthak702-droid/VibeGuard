@@ -8,5 +8,5 @@ license.workspace = true
 [dependencies]
 ignore.workspace = true
 serde_json.workspace = true
-vibeguard-config = { path = "../vibeguard-config" }
-vibeguard-core = { path = "../vibeguard-core" }
+vibeguard-config = { path = "../vibeguard-config", version = "0.3.0" }
+vibeguard-core = { path = "../vibeguard-core", version = "0.3.0" }
